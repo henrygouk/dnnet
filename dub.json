@@ -1,0 +1,12 @@
+{
+	"name": "dnnet",
+	"authors": [
+		"Henry Gouk"
+	],
+	"dependencies": {
+		"dopt": "~>0.1.0"
+	},
+	"description": "An artificial neural networks library.",
+	"copyright": "Copyright © 2016, Henry Gouk",
+	"license": "MIT"
+}
