@@ -4,7 +4,7 @@
 		"Henry Gouk"
 	],
 	"dependencies": {
-		"dopt": "~>0.1.0"
+		"dopt": "~master"
 	},
 	"description": "An artificial neural networks library.",
 	"copyright": "Copyright © 2016, Henry Gouk",
