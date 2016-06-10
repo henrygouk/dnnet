@@ -78,13 +78,20 @@ class Network
 							.array();
 
 			auto networkFunction = func(inputs ~ paramVars, [outputLayer.expression]);
+			mKernel = compile!CUDACompiler(networkFunction);
 
-			auto mOptimiser = createOptimiser(updateRule, networkFunction, mParameters, inputs);
+			mOptimiser = createOptimiser(updateRule, networkFunction, mParameters, inputs);
 		}
 
 		void trainBatch(float[][] inputs)
 		{
 			mOptimiser(inputs);
+		}
+
+		float evaluate(float[][] inputs)
+		{
+			void[][] kernelInputs = inputs.map!(x => cast(void[])x).array() ~ mParameters.map!(x => cast(void[])x.value).array();
+			return (cast(float[][])mKernel(kernelInputs))[0][0];
 		}
 	}
 
@@ -95,5 +102,6 @@ class Network
 		Layer[] mLayers;
 		Parameter[] mParameters;
 		Optimiser mOptimiser;
+		CUDAKernel mKernel;
 	}
 }

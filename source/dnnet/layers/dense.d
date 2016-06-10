@@ -31,8 +31,8 @@ import dnnet.layers;
 
 Layer dense(W, B)(Layer input, uint numOutputs, W w, B b)
 {
-	auto weights = Parameter.create(w, [input.outputShape, numOutputs]);
+	auto weights = Parameter.create(w, [input.outputShape[1], numOutputs]);
 	auto biases = Parameter.create(b, [numOutputs]);
 
-	return new Layer([input], input.expression * weights.expression + repeat(biases.expression, input.outputShape[0]), [weights, biases]);
+	return new Layer([input], new MatrixMultiply(input.expression, weights.expression) + repeat(biases.expression, input.outputShape[0]), [weights, biases]);
 }

@@ -27,6 +27,7 @@ module dnnet;
 public
 {
 	import dnnet.core;
+	import dnnet.initialisers;
 	import dnnet.layers;
 	import dnnet.network;
 	import dnnet.optimisers;

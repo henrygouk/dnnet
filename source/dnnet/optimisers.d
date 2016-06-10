@@ -26,6 +26,7 @@ module dnnet.optimisers;
 
 import std.algorithm;
 import std.array;
+import std.exception;
 import std.range;
 import std.typecons;
 
@@ -53,13 +54,13 @@ UpdateRule sgd(float learningRate)
 {
 	auto updateRule(Function network, Update[] updates)
 	{
-		updates = updates.dup;
+		//updates = updates.dup;
 		auto paramVars = getVariables(updates);
 		auto grads = network.gradients(paramVars);
 
-		for(size_t i = 0; i < paramVars.length; i++)
+		for(size_t i = 0; i < updates.length; i++)
 		{
-			updates[i][1] = paramVars[i] - grads[i] * learningRate;
+			updates[i][1] = updates[i][0].variable - (grads[i] * learningRate);
 		}
 
 		return updates;
@@ -92,7 +93,7 @@ auto addMomentum(Update[] updates, float momentumRate)
 	return updates ~ velocityUpdates;
 }
 
-auto momentum(float learningRate, float momentumRate)
+UpdateRule momentum(float learningRate, float momentumRate)
 {
 	auto sgdRule = sgd(learningRate);
 
@@ -100,6 +101,8 @@ auto momentum(float learningRate, float momentumRate)
 	{
 		return addMomentum(sgdRule(network, updates), momentumRate);
 	}
+
+	return &updateRule;
 }
 
 Optimiser createOptimiser(UpdateRule updateRule, Function network, Parameter[] parameters, Variable[] userParams)
@@ -108,31 +111,33 @@ Optimiser createOptimiser(UpdateRule updateRule, Function network, Parameter[] p
 
 	auto updateFunc = func(userParams ~ updates.map!(x => x[0].variable).array(), updates.map!(x => x[1]).array());
 	auto kernel = compile!CUDACompiler(updateFunc);
-
+	
 	auto inputBuffers = updateFunc
 					   .inputs
 					   .map!(x => allocate!CUDACompiler(x.type))
 					   .array();
-
-	auto outputBuffers = inputBuffers[network.inputs.length - parameters.length .. $];
+	
+	auto outputBuffers = inputBuffers[userParams.length .. $];
 
 	void optimiser(float[][] inputs)
 	{
+		enforce(inputs.length == userParams.length, "Incorrect number of inputs supplied.");
+
 		for(size_t i = 0; i < inputs.length; i++)
 		{
-			inputBuffers[i].set(inputs[i]);
+			inputBuffers[i].set(inputs[i]);	
 		}
-
-		for(size_t i = 0; i < parameters.length; i++)
+		
+		for(size_t i = 0; i < updates.length; i++)
 		{
-			outputBuffers[i].set(parameters[i].value);
+			outputBuffers[i].set(updates[i][0].value);
 		}
 
 		kernel.execute(inputBuffers, outputBuffers);
 
-		for(size_t i = 0; i < parameters.length; i++)
+		for(size_t i = 0; i < updates.length; i++)
 		{
-			outputBuffers[i].get(parameters[i].value);
+			outputBuffers[i].get(updates[i][0].value);
 		}
 	}
 

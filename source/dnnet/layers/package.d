@@ -33,7 +33,11 @@ import dnnet;
 
 public
 {
+	import dnnet.layers.crossentropy;
+	import dnnet.layers.datasource;
 	import dnnet.layers.dense;
+	import dnnet.layers.relu;
+	import dnnet.layers.softmax;
 }
 
 class Layer

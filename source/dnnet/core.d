@@ -61,16 +61,16 @@ class Parameter
 			return mValue;
 		}
 
-		static Parameter create(C)(ctor, in uint[] shape)
+		static Parameter create(C)(C paramInit, in uint[] shape)
 		{
 			static if(is(C == Parameter))
 			{
-				enforce(ctor.variable.shape == shape, "The supplied parameter does not have the correct shape.");
-				return ctor;
+				enforce(paramInit.variable.shape == shape, "The supplied parameter does not have the correct shape.");
+				return paramInit;
 			}
 			else static if(is(C == float[] delegate(in uint[])) || is(C == float[] function(in uint[])))
 			{
-				return new Parameter(float32(shape), ctor(shape));
+				return new Parameter(cast(Variable)float32(shape), paramInit(shape));
 			}
 			else
 			{

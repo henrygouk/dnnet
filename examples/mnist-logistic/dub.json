@@ -1,0 +1,16 @@
+{
+	"name": "mnist-logistic",
+	"authors": [
+		"Henry Gouk"
+	],
+	"description": "MNIST logistic regression example",
+	"copyright": "Copyright © 2016, Henry Gouk",
+	"license": "MIT",
+	"versions": ["doptDebug"],
+	"dependencies": {
+		"dnnet": {
+			"version": "~master",
+			"path": "../../"
+		}
+	}
+}
