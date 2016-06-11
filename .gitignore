@@ -5,3 +5,4 @@ __dummy.html
 *.obj
 __test__library__
 libdnnet.a
+examples/mnist-logistic/mnist-logistic

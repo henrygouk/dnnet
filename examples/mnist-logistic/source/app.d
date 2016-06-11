@@ -19,6 +19,7 @@ void main(string[] args)
 	const int epochs = 1000;
 	const int batchSize = 500;
 	const float learningRate = 0.1;
+	const float momentumRate = 0.9;
 
 	//Load the MNIST features and labels
 	auto data = loadMNIST(args[1]);
@@ -33,8 +34,8 @@ void main(string[] args)
 	auto labelsLayer = datasource([batchSize, 10]);
 
 	/*
-	   Now we define the actual network architecture -- UFCS makes this pretty :)
-	   Initialise weights and biases to values between -0.1 and 0.1
+		Now we define the actual network architecture -- UFCS makes this pretty :)
+		Initialise weights and biases to values between -0.1 and 0.1
 	*/
 	auto layers = featuresLayer
 				 .dense(10, uniformInit(-0.01, 0.01), uniformInit(-0.01, 0.01))
@@ -50,9 +51,9 @@ void main(string[] args)
 		[featuresLayer, labelsLayer] indicates which order the model.trainBatch method
 		should expect arguments to be passed in.
 
-		sgd(...) specifies the optimisation algorithm we want to use to find the parameters.
+		momentum(...) specifies the optimisation algorithm we want to use to find the parameters.
 	*/
-	auto model = new Network(layers, [featuresLayer, labelsLayer], sgd(learningRate));
+	auto model = new Network(layers, [featuresLayer, labelsLayer], momentum(learningRate, momentumRate));
 
 	//Train/evaluate the model!
 	for(int e = 0; e < epochs; e++)

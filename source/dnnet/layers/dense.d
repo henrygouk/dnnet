@@ -26,7 +26,7 @@ module dnnet.layers.dense;
 
 import dopt.core;
 
-import dnnet.core;
+import dnnet.parameter;
 import dnnet.layers;
 
 Layer dense(W, B)(Layer input, uint numOutputs, W w, B b)
