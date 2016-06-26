@@ -33,11 +33,19 @@ import dnnet;
 
 public
 {
+	import dnnet.layers.batchnorm;
+	import dnnet.layers.convolutional;
 	import dnnet.layers.crossentropy;
 	import dnnet.layers.datasource;
+	import dnnet.layers.deconvolutional;
 	import dnnet.layers.dense;
+	import dnnet.layers.dropout;
+	import dnnet.layers.maxpool;
 	import dnnet.layers.relu;
 	import dnnet.layers.softmax;
+	import dnnet.layers.squarederror;
+	import dnnet.layers.tanh;
+	import dnnet.layers.weightdecay;
 }
 
 class Layer

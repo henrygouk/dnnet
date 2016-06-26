@@ -25,17 +25,74 @@
 module dnnet.initialisers;
 
 import std.algorithm;
+import std.exception;
+import std.math;
 import std.random;
+
+auto constantInit(float val)
+{
+	float[] init(in uint[] shape)
+	{
+		auto params = new float[shape.fold!"a * b"(1)];
+		params[] = val;
+
+		return params;
+	}
+
+	return &init;
+}
 
 auto uniformInit(float low, float high)
 {
 	float[] init(in uint[] shape)
 	{
-		auto params = new float[shape.fold!"a * b"];
+		auto params = new float[shape.fold!"a * b"(1)];
 
 		for(size_t i = 0; i < params.length; i++)
 		{
 			params[i] = uniform(low, high);
+		}
+
+		return params;
+	}
+
+	return &init;
+}
+
+auto glorotInit()
+{
+	float[] init(in uint[] shape)
+	{
+		enforce(shape.length > 0, "shape must have a nonzero length.");
+
+		auto params = new float[shape.fold!"a * b"(1)];
+
+		size_t weightVol = 1;
+		
+		if(shape.length > 2)
+		{
+			weightVol = shape[2 .. $].fold!"a * b"(1);
+		}
+
+		size_t fan;
+
+		if(shape.length == 1)
+		{
+			fan = shape[0];
+		}
+		else
+		{
+			fan = shape[0] * shape[1];
+		}
+
+		float stdDev = sqrt(2.0f / (fan * weightVol));
+		float r = stdDev * sqrt(3.0f);
+
+		for(size_t i = 0; i < params.length; i++)
+		{
+			//params[i] = uniform(-r, r);
+			import std.mathspecial;
+			params[i] = stdDev * normalDistributionInverse(uniform(0.0, 1.0));
 		}
 
 		return params;

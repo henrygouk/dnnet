@@ -26,6 +26,7 @@ module dnnet.parameter;
 
 import std.algorithm;
 import std.array;
+import std.exception;
 
 import dopt.core;
 

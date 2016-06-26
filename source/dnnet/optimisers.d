@@ -50,7 +50,7 @@ Variable[] getVariables(Update[] updates)
 		  .array();
 }
 
-UpdateRule sgd(float learningRate)
+UpdateRule sgd(float learningRate = 0.01f)
 {
 	auto updateRule(Function network, Update[] updates)
 	{
@@ -76,7 +76,7 @@ auto addMomentum(Update[] updates, float momentumRate)
 	
 	//Create a new set of variables with the same structure as the params
 	auto velocities = paramVars
-					 .map!(x => cast(Variable)x.copy([]))
+					 .map!(x => new Variable(x.type))
 					 .array();
 
 	auto velocityUpdates = new Update[velocities.length];
@@ -93,13 +93,74 @@ auto addMomentum(Update[] updates, float momentumRate)
 	return updates ~ velocityUpdates;
 }
 
-UpdateRule momentum(float learningRate, float momentumRate)
+UpdateRule momentum(float learningRate = 0.001f, float momentumRate = 0.9f)
 {
 	auto sgdRule = sgd(learningRate);
 
 	auto updateRule(Function network, Update[] updates)
 	{
 		return addMomentum(sgdRule(network, updates), momentumRate);
+	}
+
+	return &updateRule;
+}
+
+UpdateRule rmsprop(float learningRate = 1.0f, float momentumRate = 0.9f, float eps = 1.0e-6)
+{
+	auto updateRule(Function network, Update[] updates)
+	{
+		updates = updates.dup;
+		auto paramVars = getVariables(updates);
+		auto grads = network.gradients(paramVars);
+
+		auto velocityUpdates = new Update[paramVars.length];
+
+		for(size_t i = 0; i < paramVars.length; i++)
+		{
+			velocityUpdates[i][0] = new Parameter(new Variable(paramVars[i].type));
+			velocityUpdates[i][1] = momentumRate * velocityUpdates[i][0].variable + (1 - momentumRate) * pow(grads[i], 2);
+			updates[i][1] = paramVars[i] - (learningRate * grads[i] / sqrt(velocityUpdates[i][1] + eps));
+		}
+
+		return updates ~ velocityUpdates;
+	}
+
+	return &updateRule;
+}
+
+UpdateRule adam(float learningRate = 0.001f, float beta1 = 0.9f, float beta2 = 0.999f, float eps = 1.0e-8)
+{
+	auto updateRule(Function network, Update[] updates)
+	{
+		updates = updates.dup;
+		auto paramVars = getVariables(updates);
+		auto grads = network.gradients(paramVars);
+
+		auto b1 = float32([]);
+		auto b2 = float32([]);
+		auto nb1 = b1 * beta1;
+		auto nb2 = b2 * beta2;
+		auto alpha = learningRate * sqrt(1.0f - nb2) / (1.0f - nb1);
+
+		Update[] newUpdates = [Update(new Parameter(b1, [1.0f]), nb1), Update(new Parameter(b2, [1.0f]), nb2)];
+
+		for(size_t i = 0; i < paramVars.length; i++)
+		{
+			auto p = paramVars[i];
+			auto m = new Variable(p.type);
+			auto v = new Variable(p.type);
+			auto g = grads[i];
+
+			auto nm = beta1 * m + (1 - beta1) * g;
+			auto nv = beta2 * v + (1 - beta2) * g * g;
+			auto np = p - alpha * nm / (sqrt(nv) + eps);
+
+			newUpdates ~= Update(new Parameter(m), nm);
+			newUpdates ~= Update(new Parameter(v), nv);
+			updates[i][1] = np;
+		}
+
+		return updates ~ newUpdates;
 	}
 
 	return &updateRule;

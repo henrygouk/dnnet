@@ -28,7 +28,7 @@ import dopt.core;
 
 import dnnet.layers;
 
-Layer crossentropy(Layer predictions, Layer labels)
+Layer crossentropy(Layer predictions, Layer labels, float eps = 1e-4)
 {
-	return new Layer([predictions, labels], (-1.0 / predictions.expression.shape[0]) * sum(labels.expression * log(predictions.expression)), []);
+	return new Layer([predictions, labels], (-1.0 / predictions.expression.shape[0]) * sum(labels.expression * log(predictions.expression + eps)), []);
 }

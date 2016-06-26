@@ -1,0 +1,15 @@
+{
+	"name": "cifar10-convnet",
+	"authors": [
+		"Henry Gouk"
+	],
+	"description": "A demo that trains a convolutional network on CIFAR10.",
+	"copyright": "Copyright © 2016, Henry Gouk",
+	"license": "MIT",
+	"dependencies": {
+		"dnnet": {
+			"version": "~master",
+			"path": "../../"
+		}
+	}
+}

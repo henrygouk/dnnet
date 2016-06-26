@@ -4,15 +4,13 @@
 		"Henry Gouk"
 	],
 	"dependencies": {
-		"dopt": {
-			"version": "~master",
-			"path": "../dopt/"
-		}
+		"dopt": "~>0.1.4"
 	},
 	"description": "An artificial neural networks library.",
 	"copyright": "Copyright © 2016, Henry Gouk",
 	"license": "MIT",
 	"subPackges": [
-		"examples/mnist-logistic/"
+		"examples/mnist-logistic/",
+		"examples/cifar10-convnet/"
 	]
 }

@@ -30,12 +30,12 @@ void main(string[] args)
 
 	//Declare the layers that we wish to use as inputs to the network.
 	//In this case it is only the features and labels for the MNIST dataset.
-	auto featuresLayer = datasource([batchSize, 28 * 28]);
+	auto featuresLayer = datasource([batchSize, 1, 28, 28]);
 	auto labelsLayer = datasource([batchSize, 10]);
 
 	/*
 		Now we define the actual network architecture -- UFCS makes this pretty :)
-		Initialise weights and biases to values between -0.1 and 0.1
+		Initialise weights and biases to values between -0.01 and 0.01
 	*/
 	auto layers = featuresLayer
 				 .dense(10, uniformInit(-0.01, 0.01), uniformInit(-0.01, 0.01))

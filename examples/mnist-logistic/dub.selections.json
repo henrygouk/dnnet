@@ -5,6 +5,5 @@
 		"derelict-cuda": "2.0.1",
 		"derelict-util": "2.0.6",
 		"dnnet": {"path":"../../"},
-		"dopt": {"path":"../../../dopt/"}
 	}
 }
