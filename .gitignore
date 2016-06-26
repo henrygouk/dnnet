@@ -6,5 +6,5 @@ __dummy.html
 __test__library__
 libdnnet.a
 examples/mnist-logistic/mnist-logistic
-exmaples/cifar10-convnet/cifar10-convnet
+examples/cifar10-convnet/cifar10-convnet
 dub.selections.json
