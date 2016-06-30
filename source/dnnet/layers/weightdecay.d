@@ -30,6 +30,46 @@ import dopt.core;
 
 import dnnet;
 
+//Very naive method. Once the Parameter class has been improved this should change.
+Parameter[] getRegularisedParams(Layer layer)
+{
+	//Get a list of all the layers
+	Layer[] ls;
+
+	void traverse(Layer l)
+	{
+		if(ls.canFind(l))
+		{
+			return;
+		}
+
+		ls ~= l;
+
+		foreach(d; l.deps)
+		{
+			traverse(d);
+		}
+	}
+
+	traverse(layer);
+
+	//Now get the parameters that should be penalised
+	Parameter[] weights;
+
+	foreach(l; ls)
+	{
+		foreach(p; l.parameters)
+		{
+			if(p.regularisable)
+			{
+				weights ~= p;
+			}
+		}
+	}
+
+	return weights;
+}
+
 Layer weightdecay(Layer input, Parameter[] weights, float decayRate)
 {
 	auto sqWeights = weights

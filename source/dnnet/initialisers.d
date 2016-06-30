@@ -82,15 +82,13 @@ auto glorotInit()
 		}
 		else
 		{
-			fan = shape[0] * shape[1];
+			fan = shape[0] * weightVol + shape[1];
 		}
 
-		float stdDev = sqrt(2.0f / (fan * weightVol));
-		float r = stdDev * sqrt(3.0f);
+		float stdDev = sqrt(2.0f / (fan));
 
 		for(size_t i = 0; i < params.length; i++)
 		{
-			//params[i] = uniform(-r, r);
 			import std.mathspecial;
 			params[i] = stdDev * normalDistributionInverse(uniform(0.0, 1.0));
 		}

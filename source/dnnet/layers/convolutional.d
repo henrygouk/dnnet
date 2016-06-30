@@ -38,6 +38,7 @@ Layer convolutional(Layer input, uint numOutputs, in uint[] kernelShape)
 Layer convolutional(W, B)(Layer input, uint numOutputs, in uint[] kernelShape, W weightsInit, B biasesInit)
 {
 	auto w = Parameter.create(weightsInit, [numOutputs, input.outputShape[1]] ~ kernelShape);
+	w.regularisable = true;
 	auto b = Parameter.create(biasesInit, [numOutputs]);
 	auto x = input.expression;
 

@@ -56,6 +56,18 @@ class Layer
 		{
 			mDeps = deps.dup;
 			mExpression = expression;
+			mTrainExpression = expression;
+			mParameters = parameters.dup;
+		}
+
+		this(Layer[] deps, Tensor trainExpression, Tensor expression, Parameter[] parameters)
+		{
+			import std.exception;
+			enforce(expression.shape == trainExpression.shape);
+
+			mDeps = deps.dup;
+			mExpression = expression;
+			mTrainExpression = trainExpression;
 			mParameters = parameters.dup;
 		}
 
@@ -67,6 +79,11 @@ class Layer
 		@property Tensor expression()
 		{
 			return mExpression;
+		}
+
+		@property Tensor trainExpression()
+		{
+			return mTrainExpression;
 		}
 
 		@property Parameter[] parameters()
@@ -84,6 +101,7 @@ class Layer
 	{
 		Layer[] mDeps;
 		Tensor mExpression;
+		Tensor mTrainExpression;
 		Parameter[] mParameters;
 	}
 }

@@ -31,7 +31,7 @@ import std.file;
 import std.stdio;
 import std.typecons;
 
-auto loadStl10(string directory, bool loadUnlabelled)
+auto loadSTL10(string directory)
 {
 	auto loadFeatures(string filename)
 	{
@@ -96,9 +96,12 @@ auto loadStl10(string directory, bool loadUnlabelled)
 		return folds;
 	}
 
-	return tuple(loadFeatures(directory ~ "train_X.bin") ~ loadFeatures(directory ~ "test_X.bin"),
-				 loadLabels(directory ~ "train_y.bin") ~ loadLabels(directory ~ "test_y.bin"),
-				 loadUnlabelled ? loadFeatures(directory ~ "unlabeled_X.bin") : null,
-				 loadIndices(directory ~ "fold_indices.txt"));
+	return tuple!("trainFeatures", "testFeatures", "trainLabels", "testLabels", "unlabelled", "indices")
+				 (loadFeatures(directory ~ "train_X.bin"),
+				  loadFeatures(directory ~ "test_X.bin"),
+				  loadLabels(directory ~ "train_y.bin"),
+				  loadLabels(directory ~ "test_y.bin"),
+				  loadFeatures(directory ~ "unlabeled_X.bin"),
+				  loadIndices(directory ~ "fold_indices.txt"));
 }
 

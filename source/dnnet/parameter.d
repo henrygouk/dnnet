@@ -34,6 +34,8 @@ class Parameter
 {
 	public
 	{
+		bool regularisable = false;
+
 		this(Variable param)
 		{
 			mParameter = param;

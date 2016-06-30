@@ -33,6 +33,7 @@ Layer dense(W, B)(Layer input, uint numOutputs, W w = glorotInit(), B b = consta
 	auto x = input.expression;
 	x = x.reshape([x.shape[0], x.volume / x.shape[0]]);
 	auto weights = Parameter.create(w, [x.shape[1], numOutputs]);
+	weights.regularisable = true;
 	auto biases = Parameter.create(b, [numOutputs]);
 
 	return new Layer([input], new MatrixMultiply(x, weights.expression) + repeat(biases.expression, input.outputShape[0]), [weights, biases]);

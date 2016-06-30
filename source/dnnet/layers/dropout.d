@@ -30,5 +30,7 @@ import dnnet;
 
 Layer dropout(Layer input, float p = 0.5)
 {
-	return new Layer([input], (lt(uniformRandom(input.outputShape, 0.0, 1.0), broadcast(constant(p), input.outputShape)) * input.expression), []);
+	auto trainExpr = lt(uniformRandom(input.outputShape, 0.0, 1.0), broadcast(constant(p), input.outputShape)) * input.trainExpression * (1.0 / (1.0 - p));
+	auto testExpr = input.expression;
+	return new Layer([input], trainExpr, testExpr, []);
 }

@@ -18,43 +18,51 @@ void main(string[] args)
 	//Define the hyperparameters up here
 	const int epochs = 100;
 	const int batchSize = 100;
-	const float learningRate = 0.001;
+	const float learningRate = 0.0005;
 	const float momentumRate = 0.9;
 
 	//Load the CIFAR10 data
 	auto data = loadCIFAR10(args[1]);
-	auto trainFeatures = data.trainFeatures;
-	auto trainLabels = data.trainLabels;
-	auto testFeatures = data.testFeatures;
-	auto testLabels = data.testLabels;
+	auto trainFeatures = data.trainFeatures;//[0 .. 40_000];
+	auto trainLabels = data.trainLabels;//[0 .. 40_000];
+	auto testFeatures = /*data.trainFeatures[40_000 .. $];/*/data.testFeatures;
+	auto testLabels = /*data.trainLabels[40_000 .. $];/*/data.testLabels;
 
 	//Create the input layers
 	auto featuresLayer = datasource([batchSize, 3, 32, 32]);
 	auto labelsLayer = datasource([batchSize, 10]);
 
-	//Create the network
+	//Define the architecture of the network
 	auto layers = featuresLayer
-				 .convolutional(128, [3, 3])
+				 .convolutional(96, [3, 3])
 				 .relu()
-				 .convolutional(128, [3, 3])
+				 .dropout(0.2)
+				 .convolutional(96, [3, 3])
+				 .relu()
+				 .dropout(0.2)
 				 .maxpool([3, 3], [2, 2])
-				 .relu()
 				 .convolutional(192, [3, 3])
 				 .relu()
+				 .dropout(0.2)
 				 .convolutional(192, [3, 3])
+				 .relu()
+				 .dropout(0.2)
 				 .maxpool([3, 3], [2, 2])
+				 .dense(512)
 				 .relu()
-				 .dense(128)
 				 .dropout()
+				 .dense(512)
 				 .relu()
-				 .dense(128)
 				 .dropout()
-				 .relu()
 				 .dense(10)
 				 .softmax();
 
-	auto lossLayer = layers.crossentropy(labelsLayer);
+	//Define the loss layer
+	auto lossLayer = layers
+					.crossentropy(labelsLayer)
+					;//.weightdecay(getRegularisedParams(layers), 0.0005);
 
+	//Create the network
 	auto model = new Network([lossLayer, layers], [featuresLayer, labelsLayer], adam(learningRate, momentumRate));
 
 	//Train/evaluate the model!

@@ -88,8 +88,9 @@ class Network
 							.map!(x => x.variable)
 							.array();
 
-			auto networkFunction = func(inputs ~ paramVars, mOutputLayers.map!(x => x.expression).array());
-			mKernel = compile!CUDACompiler(networkFunction);
+			auto networkFunction = func(inputs ~ paramVars, mOutputLayers.map!(x => x.trainExpression).array());
+			auto testNetworkFunction = func(inputs ~ paramVars, mOutputLayers.map!(x => x.expression).array());
+			mKernel = compile!CUDACompiler(testNetworkFunction);
 
 			if(updateRule !is null)
 			{
@@ -100,7 +101,6 @@ class Network
 		void trainBatch(float[][] inputs)
 		{
 			enforce(mOptimiser !is null, "No update rule was provided during network creation.");
-
 			mOptimiser(inputs);
 		}
 
