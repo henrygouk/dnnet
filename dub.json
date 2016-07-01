@@ -4,7 +4,7 @@
 		"Henry Gouk"
 	],
 	"dependencies": {
-		"dopt": "~>0.1.4",
+		"dopt": "~>0.1.5",
 		"imageformats": "~>6.0.0"
 	},
 	"description": "An artificial neural networks library.",
